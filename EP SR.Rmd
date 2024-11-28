@@ -1,0 +1,76 @@
+---
+title: "EP Scoping Review"
+author: "BE Kellerhuis"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+EP_SR_Data <- read_excel("EP SR Data.xlsx", 
+     col_names = FALSE, na = "NR", skip = 2)
+
+colnames(EP_SR_Data) <- c("Extractor", "Citation", "Title", "Year", "Target condition", "Number of decisions", "Expert panel type", "Number of experts in study", "Number of experts in panel", "Specialism", "Same experts each panel", "Differential verification", "Information provided", "Incorporation", "Machine learning", "Pre-labeled", "Outcome", "Comments")
+```
+
+```{r}
+table(EP_SR_Data$...7)
+table(EP_SR_Data$...11)
+table(EP_SR_Data$...12) # Differential verification
+table(EP_SR_Data$...14) # incorporation
+table(EP_SR_Data$...15) # Machine learning
+table(EP_SR_Data$...16)
+
+summary(EP_SR_Data)
+
+sum(na.omit(EP_SR_Data$`Number of experts in panel`) < 4) / length(na.omit(EP_SR_Data$`Number of experts in panel`))
+
+sum(na.omit(EP_SR_Data$`Number of experts in panel`) == 3) / length(na.omit(EP_SR_Data$`Number of experts in panel`))
+```
+
+```{r}
+summary(EP_SR_Data$...6) # Med 139, IQR 282.5
+summary(EP_SR_Data$...8) # Med 3, IQR 3.2
+summary(EP_SR_Data$...9) # Med 3, IQR 1.5
+
+sum(is.na(EP_SR_Data$...6))/nrow(EP_SR_Data) # 1.6% unclear
+sum(is.na(EP_SR_Data$...8))/nrow(EP_SR_Data) # 16.5% unclear
+sum(is.na(EP_SR_Data$...9))/nrow(EP_SR_Data) # 12.0% unclear
+
+```
+
+```{r}
+table(EP_SR_Data$...7)
+
+hist(EP_SR_Data[EP_SR_Data$...7 == 'Consensus', 6], main = "Number of participants")
+
+n_participants <- EP_SR_Data[, c(6,7)]
+n_participants_small <- n_participants[n_participants$...6 < 2000,]
+
+# Number of experts in panel
+par(mfrow=c(1,4))
+hist(EP_SR_Data[EP_SR_Data$...7 == 'Consensus', 9], main = "Consensus", xlab = "Number of experts", xlim = c(0, 20000), freq = F, ylim = c(0,0.02), breaks = 0:20 * 1000 + 0.5)
+hist(EP_SR_Data[EP_SR_Data$...7 == 'Individual', 9], main = "Individual", xlab = "Number of experts", xlim = c(0, 20000), freq = F, ylim = c(0,1), breaks = 0:20 * 1000 + 0.5)
+hist(EP_SR_Data[EP_SR_Data$...7 == 'Individual with tiebreaker', 9], main = "Individual with tiebreaker", xlab = "Number of experts", xlim = c(0, 20000), freq = F, ylim = c(0,1), breaks = 0:20 * 1000 + 0.5)
+hist(EP_SR_Data[EP_SR_Data$...7 == 'Staged', 9], main = "Staged", xlab = "Number of experts", xlim = c(0, 20000), freq = F, ylim = c(0,1), breaks = 0:20 * 1000 + 0.5)
+
+# Number of participants
+par(mfrow=c(1,4), title = "Number of participants by panel type (>2000 excluded.")
+hist(n_participants_small[n_participants_small$...7 == "Consensus", 1], main = "Consensus", xlab = "Number of participants", xlim = c(0, 1900), freq = F, ylim = c(0,0.01), breaks = 0:200 * 10 + 0.5)
+hist(n_participants_small[n_participants_small$...7 == "Individual", 1], main = "Individual", xlab = "Number of participants", xlim = c(0, 1900), freq = F, ylim = c(0,0.01), breaks = 0:200 * 10 + 0.5)
+hist(n_participants_small[n_participants_small$...7 == "Individual with tiebreaker", 1], main = "Individual with tiebreaker", xlab = "Number of participants", xlim = c(0, 1900), freq = F, ylim = c(0,0.01), breaks = 0:200 * 10 + 0.5)
+hist(n_participants_small[n_participants_small$...7 == "Staged", 1], main = "Staged", xlab = "Number of participants", xlim = c(0, 1900), freq = F, ylim = c(0,0.01), breaks = 0:200 * 10 + 0.5)
+```
+
+```{r}
+boxplot(...6 ~ ...7,data = EP_SR_Data[EP_SR_Data$...6 < 1000,], xlab = "Expert panel type", ylab = "Number of individuals")
+
+boxplot(...9 ~ ...7,data = EP_SR_Data, xlab = "Expert panel type", ylab = "Number of experts")
+```
+
+```{r}
+hist()
+```
